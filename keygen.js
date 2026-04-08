@@ -8,7 +8,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const HTML_FILE = path.join(__dirname, 'wellworkstation.html')
+const HTML_FILE = path.join(__dirname, 'index.html')
 const args = process.argv.slice(2)
 
 function parseArgs() {
@@ -93,7 +93,7 @@ function listKeys(content) {
 const opts = parseArgs()
 
 if (!fs.existsSync(HTML_FILE)) {
-  console.error(`\n  ✗ Cannot find wellworkstation.html\n  Make sure keygen.js is in the same folder.\n`)
+  console.error(`\n  ✗ Cannot find index.html\n  Make sure keygen.js is in the same folder.\n`)
   process.exit(1)
 }
 
@@ -140,7 +140,7 @@ console.log(`
   Plan:     ${plan}
   Expiry:   ${expiry || 'No expiry — permanent'}
 
-  ✓ Added to wellworkstation.html
+  ✓ Added to index.html
   ✓ Deploy the file to make it live
 
 ══════════════════════════════════════════
