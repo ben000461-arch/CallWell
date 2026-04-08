@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CallWell</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f0ede8;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.06);
+  --text:#1a1917;--text2:#6b6860;--text3:#9c9a95;
+  --accent:#2d6a4f;--accent-light:#e8f4ee;--accent2:#1b4332;
+  --warn:#b45309;--warn-light:#fef3c7;
+  --danger:#991b1b;--danger-light:#fee2e2;
+  --info:#1e40af;--info-light:#dbeafe;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+
+/* ── KEY GATE ── */
+#gate{position:fixed;inset:0;background:linear-gradient(135deg,#1b4332 0%,#2d6a4f 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.gate-box{background:#fff;border-radius:20px;padding:48px;max-width:440px;width:100%;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,0.3)}
+.gate-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:32px}
+.gate-logo-icon{width:48px;height:48px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center}
+.gate-logo-text{font-size:28px;font-weight:600;letter-spacing:-0.5px;color:var(--text)}
+.gate-subtitle{font-size:14px;color:var(--text3);margin-bottom:32px;line-height:1.6}
+.gate-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;font-family:var(--mono);text-align:center;letter-spacing:2px;outline:none;transition:border-color 0.2s;background:#f8f8f8}
+.gate-input:focus{border-color:var(--accent);background:#fff}
+.gate-input::placeholder{font-family:var(--font);letter-spacing:0;font-size:14px;color:var(--text3)}
+.gate-btn{width:100%;margin-top:16px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background 0.2s}
+.gate-btn:hover{background:var(--accent2)}
+.gate-error{margin-top:12px;font-size:13px;color:var(--danger);min-height:20px}
+.gate-footer{margin-top:24px;font-size:12px;color:var(--text3)}
+.gate-footer a{color:var(--accent);text-decoration:none}
+
+/* ── PILOT BANNER ── */
+#pilot-banner{background:var(--warn-light);border-bottom:1px solid rgba(180,83,9,0.2);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--warn)}
+#pilot-banner.hidden{display:none}
+
+/* ── APP ── */
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border2)}
+.logo-mark{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-text{font-size:15px;font-weight:600;letter-spacing:-0.3px}
+.logo-sub{font-size:11px;color:var(--text3)}
+.sidebar-nav{padding:12px 10px;flex:1;overflow-y:auto}
+.nav-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;padding:6px 10px 4px;margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;color:var(--text2);font-size:13.5px;transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-light);color:var(--accent2);font-weight:500}
+.nav-item svg{width:16px;height:16px;opacity:0.7;flex-shrink:0}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;font-family:var(--mono)}
+.sidebar-bottom{padding:12px 10px;border-top:1px solid var(--border2)}
+.facility-card{background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px}
+.facility-name{font-size:12px;font-weight:600}
+.facility-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.sign-out-btn{margin-top:8px;width:100%;padding:6px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;color:var(--text3);cursor:pointer;font-family:var(--font);transition:all 0.15s}
+.sign-out-btn:hover{background:var(--danger-light);color:var(--danger);border-color:transparent}
+
+.main{margin-left:220px;flex:1;padding:28px 32px;min-height:100vh}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:22px;font-weight:600;letter-spacing:-0.5px}
+.page-sub{font-size:13px;color:var(--text3);margin-top:2px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font);transition:all 0.15s}
+.btn:hover{background:var(--surface2)}.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn-primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn-danger{background:var(--danger-light);color:var(--danger);border-color:transparent}.btn-sm{padding:5px 10px;font-size:12px}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border2);box-shadow:var(--shadow)}
+.stat-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:6px}
+.stat-value{font-size:26px;font-weight:600;letter-spacing:-0.5px}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border2);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:600}
+.card-body{padding:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.resident-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+
+.resident-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border2);padding:18px;transition:all 0.15s;box-shadow:var(--shadow)}
+.resident-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.resident-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;margin-bottom:12px}
+.resident-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.resident-room{font-size:12px;color:var(--text3);margin-bottom:8px}
+.resident-meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border2)}
+
+.mood-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.mood-positive{background:var(--accent-light);color:var(--accent2)}
+.mood-neutral{background:var(--surface2);color:var(--text2)}
+.mood-concern{background:var(--warn-light);color:var(--warn)}
+.mood-alert{background:var(--danger-light);color:var(--danger)}
+
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-green{background:#22c55e}.dot-red{background:#ef4444}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border2)}
+td{padding:12px 16px;border-bottom:1px solid var(--border2);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.alert-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.badge-high{background:var(--danger-light);color:var(--danger)}
+.badge-med{background:var(--warn-light);color:var(--warn)}
+.badge-new{background:var(--info-light);color:var(--info)}
+
+.call-log-item{display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border2)}
+.call-log-item:last-child{border-bottom:none}
+.call-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.call-icon-out{background:var(--accent-light)}.call-icon-in{background:var(--info-light)}
+.call-info{flex:1}
+.call-name{font-size:13px;font-weight:500}
+.call-time-label{font-size:11px;color:var(--text3);margin-top:1px}
+.call-snippet{font-size:12px;color:var(--text2);margin-top:4px;font-style:italic}
+
+.alert-item{display:flex;align-items:flex-start;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border2);transition:background 0.1s}
+.alert-item:hover{background:var(--surface2)}.alert-item:last-child{border-bottom:none}
+.alert-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.alert-high{background:var(--danger-light)}.alert-med{background:var(--warn-light)}
+.alert-content{flex:1}
+.alert-title{font-size:13px;font-weight:500}
+.alert-desc{font-size:12px;color:var(--text2);margin-top:2px}
+.alert-time-label{font-size:11px;color:var(--text3)}
+
+.schedule-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border2);transition:background 0.1s}
+.schedule-row:last-child{border-bottom:none}.schedule-row:hover{background:var(--surface2)}
+.schedule-time{font-family:var(--mono);font-size:12px;color:var(--accent2);font-weight:500;width:80px;flex-shrink:0}
+
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font);background:var(--surface);color:var(--text);outline:none;transition:border-color 0.15s}
+.form-input:focus{border-color:var(--accent)}
+select.form-input{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6860' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+textarea.form-input{resize:vertical;min-height:80px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--surface);border-radius:var(--radius);width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-size:16px;font-weight:600}
+.modal-close{cursor:pointer;color:var(--text3);font-size:22px;line-height:1;background:none;border:none;font-family:var(--font)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surface)}
+
+.api-status{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--accent-light);color:var(--accent2);border-radius:20px;font-size:12px;font-weight:500}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.transcript-box{background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-size:12px;line-height:1.7;color:var(--text2);max-height:300px;overflow-y:auto}
+.transcript-line{margin-bottom:6px}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text3)}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 18px;border-radius:var(--radius-sm);font-size:13px;z-index:999;animation:slideUp 0.3s ease;box-shadow:0 4px 20px rgba(0,0,0,0.2)}
+.toast-success{background:var(--accent)}.toast-error{background:var(--danger)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- ── KEY GATE ── -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">
+      <div class="gate-logo-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
+        </svg>
+      </div>
+      <div class="gate-logo-text">CallWell</div>
+    </div>
+    <p class="gate-subtitle">Enter your facility access key to continue.<br>Contact your CallWell representative if you need a key.</p>
+    <input type="text" class="gate-input" id="gate-input" placeholder="WELL-XXXX-XXXX-XXXX" maxlength="19" oninput="formatKey(this)" onkeydown="if(event.key==='Enter')validateKey()"/>
+    <button class="gate-btn" onclick="validateKey()">Access Dashboard</button>
+    <div class="gate-error" id="gate-error"></div>
+    <div class="gate-footer">Need a key? <a href="https://callwell.ai" target="_blank">Visit callwell.ai</a></div>
+  </div>
+</div>
+
+<!-- ── PILOT BANNER ── -->
+<div id="pilot-banner" class="hidden">
+  <span>⏱ Pilot access — <strong id="days-remaining"></strong> days remaining</span>
+  <a href="https://callwell.ai" target="_blank" style="color:var(--warn);font-weight:600;text-decoration:none">Upgrade to full access →</a>
+</div>
+
+<!-- ── APP (hidden until key validated) ── -->
+<div id="app" style="display:none">
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text">CallWell</div>
+          <div class="logo-sub" id="sidebar-facility-name">Loading...</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-label">Monitor</div>
+      <button class="nav-item active" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="navigate('alerts')" id="nav-alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Alerts
+        <span class="nav-badge" id="alert-badge" style="display:none">0</span>
+      </button>
+      <div class="nav-label">Residents</div>
+      <button class="nav-item" onclick="navigate('residents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Residents
+      </button>
+      <button class="nav-item" onclick="navigate('calls')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+        Call Logs
+      </button>
+      <div class="nav-label">Operations</div>
+      <button class="nav-item" onclick="navigate('schedule')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Scheduling
+      </button>
+      <button class="nav-item" onclick="navigate('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 115 19.07"/></svg>
+        Settings
+      </button>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="facility-card">
+        <div class="facility-name" id="facility-display">Loading...</div>
+        <div class="facility-sub" id="resident-count-display">0 residents</div>
+      </div>
+      <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-sub" id="dashboard-date"></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="api-status" id="poll-status"><div class="pulse"></div>Live</div>
+          <span id="last-polled" style="font-size:11px;color:var(--text3)"></span>
+          <button class="btn btn-sm" onclick="pollNow()" title="Refresh now">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 100-3.51"/></svg>
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-schedule')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Schedule Call
+          </button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Residents</div><div class="stat-value" id="stat-residents">0</div><div class="stat-sub"><span class="status-dot dot-green"></span>Enrolled</div></div>
+        <div class="stat-card"><div class="stat-label">Calls Today</div><div class="stat-value" id="stat-calls">0</div><div class="stat-sub" style="color:var(--accent)">Live count</div></div>
+        <div class="stat-card"><div class="stat-label">Positive Mood</div><div class="stat-value" id="stat-positive" style="color:var(--accent)">0</div><div class="stat-sub">of enrolled</div></div>
+        <div class="stat-card"><div class="stat-label">Active Alerts</div><div class="stat-value" id="stat-alerts" style="color:var(--danger)">0</div><div class="stat-sub"><span class="status-dot dot-red"></span>Needs review</div></div>
+      </div>
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Recent Calls</div><span id="new-call-badge" style="display:none" class="alert-badge badge-new">New</span></div>
+            <div id="dashboard-calls"><div class="empty-state"><div class="empty-icon">📞</div><div class="empty-title">No calls yet</div><div>Schedule or trigger a call to get started</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Upcoming Calls</div><button class="btn btn-sm" onclick="navigate('schedule')">View all</button></div>
+            <div id="dashboard-upcoming"><div class="empty-state" style="padding:24px"><div class="empty-title">No upcoming calls</div></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Alerts</div><span id="dashboard-alert-badge" class="alert-badge badge-high" style="display:none"></span></div>
+            <div id="dashboard-alerts"><div class="empty-state" style="padding:32px 20px"><div style="font-size:24px;margin-bottom:8px">✓</div><div class="empty-title">All clear</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Mood Overview</div><span style="font-size:11px;color:var(--text3)">Live</span></div>
+            <div class="card-body" id="mood-overview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESIDENTS -->
+    <div id="page-residents" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Residents</div><div class="page-sub" id="resident-page-sub">0 enrolled</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-add-resident')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Resident
+        </button>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <input type="text" class="form-input" placeholder="Search residents..." style="max-width:280px" oninput="renderResidents(this.value)">
+      </div>
+      <div class="resident-grid" id="resident-grid"></div>
+    </div>
+
+    <!-- CALLS -->
+    <div id="page-calls" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Call Logs</div><div class="page-sub">All AI companion calls</div></div>
+        <button class="btn btn-sm" onclick="pollNow()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 100-3.51"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Resident</th><th>Direction</th><th>Duration</th><th>Mood</th><th>Time</th><th>Snippet</th><th></th></tr></thead>
+          <tbody id="call-log-table"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">No calls yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div id="page-schedule" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Scheduling</div><div class="page-sub">Manage outbound AI calls</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-schedule')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Schedule Call
+        </button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title" id="schedule-day-title">Today</div><span id="schedule-count" style="font-size:12px;color:var(--text3)"></span></div>
+        <div id="schedule-list"><div class="empty-state" style="padding:40px"><div class="empty-icon">📅</div><div class="empty-title">No calls scheduled</div><div>Click Schedule Call to add one</div></div></div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div id="page-alerts" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Alerts</div><div class="page-sub">AI-flagged concerns from calls</div></div>
+        <button class="btn btn-sm" onclick="dismissAllAlerts()">Dismiss all</button>
+      </div>
+      <div class="card" id="alerts-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="page-settings" class="page">
+      <div class="page-header"><div><div class="page-title">Settings</div><div class="page-sub">Facility configuration</div></div></div>
+      <div class="grid-2">
+        <div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Facility Info</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="form-label">Facility Name</label><input type="text" class="form-input" id="settings-facility" placeholder="Sunrise Memory Care"></div>
+              <div class="form-group"><label class="form-label">Admin Email</label><input type="email" class="form-input" id="settings-email" placeholder="admin@facility.com"></div>
+              <div class="form-group"><label class="form-label">AI Voice</label>
+                <select class="form-input" id="settings-voice">
+                  <option value="June">June (recommended — warm female)</option>
+                  <option value="Amber">Amber</option>
+                  <option value="Michael">Michael</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Max Call Duration (minutes)</label><input type="number" class="form-input" id="settings-duration" value="20" min="5" max="60"></div>
+              <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header"><div class="card-title">Access Key</div></div>
+            <div class="card-body">
+              <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-family:var(--mono);font-size:15px;letter-spacing:2px;text-align:center;color:var(--accent2);font-weight:600" id="settings-key-display">—</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center" id="settings-key-expiry"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Alert Thresholds</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="form-label">High alert keywords</label><textarea class="form-input" id="settings-high-kw" style="min-height:60px">go home, where am i, scared, falling, chest pain, want to die</textarea></div>
+              <div class="form-group"><label class="form-label">Medium alert keywords</label><textarea class="form-input" id="settings-med-kw" style="min-height:60px">confused, forgot, medication, lonely, not eating, not sleeping, pain</textarea></div>
+              <div class="form-group"><label class="form-label">Short call threshold (minutes)</label><input type="number" class="form-input" id="settings-short-call" value="3"></div>
+              <button class="btn btn-primary" onclick="saveSettings()">Save Thresholds</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main -->
+</div><!-- end app -->
+</div><!-- end #app wrapper -->
+
+<!-- MODAL: ADD RESIDENT -->
+<div id="modal-add-resident" class="modal-overlay" style="display:none" onclick="closeModalOutside(event,'modal-add-resident')">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add Resident</div><button class="modal-close" onclick="closeModal('modal-add-resident')">×</button></div>
+    <div class="modal-body">
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group"><label class="form-label">First Name *</label><input type="text" class="form-input" id="res-first" placeholder="Margaret"></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input type="text" class="form-input" id="res-last" placeholder="Williams"></div>
+      </div>
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group"><label class="form-label">Room *</label><input type="text" class="form-input" id="res-room" placeholder="14"></div>
+        <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input" id="res-phone" placeholder="+15559001234"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Interests / Hobbies</label><input type="text" class="form-input" id="res-interests" placeholder="Gardening, classical music, family stories"></div>
+      <div class="form-group"><label class="form-label">Family Info</label><input type="text" class="form-input" id="res-family" placeholder="Daughter Sarah visits on weekends"></div>
+      <div class="form-group"><label class="form-label">Care Notes</label><textarea class="form-input" id="res-notes" placeholder="Early stage dementia, enjoys talking about her garden..."></textarea></div>
+      <div class="form-group"><label class="form-label">Call Frequency</label>
+        <select class="form-input" id="res-freq"><option>Daily</option><option>Twice daily</option><option>Every other day</option><option>Weekly</option><option>Manual only</option></select>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-add-resident')">Cancel</button><button class="btn btn-primary" onclick="addResident()">Add Resident</button></div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT RESIDENT -->
+<div id="modal-edit-resident" class="modal-overlay" style="display:none" onclick="closeModalOutside(event,'modal-edit-resident')">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Edit Resident</div><button class="modal-close" onclick="closeModal('modal-edit-resident')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-res-id">
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-input" id="edit-res-first"></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-input" id="edit-res-last"></div>
+      </div>
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group"><label class="form-label">Room</label><input type="text" class="form-input" id="edit-res-room"></div>
+        <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="edit-res-phone"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Interests</label><input type="text" class="form-input" id="edit-res-interests"></div>
+      <div class="form-group"><label class="form-label">Family Info</label><input type="text" class="form-input" id="edit-res-family"></div>
+      <div class="form-group"><label class="form-label">Care Notes</label><textarea class="form-input" id="edit-res-notes"></textarea></div>
+      <div class="form-group"><label class="form-label">Call Frequency</label>
+        <select class="form-input" id="edit-res-freq"><option>Daily</option><option>Twice daily</option><option>Every other day</option><option>Weekly</option><option>Manual only</option></select>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="deleteResident()">Delete</button><button class="btn" onclick="closeModal('modal-edit-resident')">Cancel</button><button class="btn btn-primary" onclick="saveResident()">Save</button></div>
+  </div>
+</div>
+
+<!-- MODAL: SCHEDULE CALL -->
+<div id="modal-schedule" class="modal-overlay" style="display:none" onclick="closeModalOutside(event,'modal-schedule')">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Schedule a Call</div><button class="modal-close" onclick="closeModal('modal-schedule')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Resident</label><select class="form-input" id="sched-resident"></select></div>
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="sched-date"></div>
+        <div class="form-group"><label class="form-label">Time</label><input type="time" class="form-input" id="sched-time" value="10:00"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Call Type</label>
+        <select class="form-input" id="sched-type"><option>Daily check-in</option><option>Morning check-in</option><option>Evening chat</option><option>Cognitive assessment</option><option>Medication reminder</option><option>Custom</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Recurrence</label>
+        <select class="form-input" id="sched-recur"><option>One time</option><option>Daily</option><option>Weekdays</option><option>Weekly</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Custom Prompt (optional)</label><textarea class="form-input" id="sched-prompt" placeholder="Leave blank to use the default personalized prompt..."></textarea></div>
+      <div id="sched-status" style="font-size:12px;margin-top:8px;display:none;padding:8px 10px;border-radius:var(--radius-sm)"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-schedule')">Cancel</button>
+      <button class="btn btn-primary" id="sched-btn" onclick="scheduleCall()">Schedule Call</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TRANSCRIPT -->
+<div id="modal-transcript" class="modal-overlay" style="display:none" onclick="closeModalOutside(event,'modal-transcript')">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="transcript-title">Call Transcript</div><button class="modal-close" onclick="closeModal('modal-transcript')">×</button></div>
+    <div class="modal-body">
+      <div id="transcript-meta" style="margin-bottom:12px;font-size:12px;color:var(--text3)"></div>
+      <div class="transcript-box" id="transcript-content"></div>
+      <div id="transcript-flags" style="margin-top:16px"></div>
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('modal-transcript')">Close</button></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+// ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+// ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+// ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+// ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+//  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+// CallWell v1.0 — Operator Config (hidden from facilities)
+// ══════════════════════════════════════════════════════
+
+const OPERATOR_CONFIG = {
+  // YOUR BLAND AI KEY — never shown to facilities
+  blandKey: 'org_37ea8d6d9f9b187fe81cf98d8cadeaadf0082cea90651c73f040fcb0b809c49ea086c4a75527fe17ed3569',
+  blandBase: 'https://api.bland.ai/v1',
+  pollInterval: 30, // seconds
+
+  // ── VALID KEYS ──────────────────────────────────────
+  // expiry format: 'YYYY-MM-DD' or null for permanent
+  // To add a new facility key, add a new line here
+  keys: {
+    'WELL-SRM1-PIL0-2026': { name: 'Sunrise Memory Care', expiry: '2026-06-30', plan: 'pilot' },
+    'WELL-LLU1-PIL0-2026': { name: 'Loma Linda University Health', expiry: '2026-06-30', plan: 'pilot' },
+    'WELL-DEMO-TEST-0000': { name: 'CallWell Demo Facility', expiry: null, plan: 'demo' },
+    'WELL-0TM9-6RX3-9W7F': { name: 'Sunrise Memory Care', expiry: '2026-05-08', plan: 'pilot' },
+    // Add more keys here — this is your master key registry
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// KEY GATE & VALIDATION
+// ══════════════════════════════════════════════════════
+
+let currentKey = null
+let currentFacility = null
+let NS = '' // localStorage namespace = the key
+
+function formatKey(input) {
+  let v = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+  let formatted = ''
+  for (let i = 0; i < v.length && i < 16; i++) {
+    if (i > 0 && i % 4 === 0) formatted += '-'
+    formatted += v[i]
+  }
+  input.value = formatted
+}
+
+function validateKey() {
+  const raw = document.getElementById('gate-input').value.trim().toUpperCase()
+  const errEl = document.getElementById('gate-error')
+  errEl.textContent = ''
+
+  if (!raw) { errEl.textContent = 'Please enter your access key.'; return }
+
+  const facility = OPERATOR_CONFIG.keys[raw]
+  if (!facility) {
+    errEl.textContent = 'Invalid access key. Please check your key and try again.'
+    document.getElementById('gate-input').style.borderColor = 'var(--danger)'
+    return
+  }
+
+  // Check expiry
+  if (facility.expiry) {
+    const expDate = new Date(facility.expiry)
+    const today = new Date()
+    today.setHours(0,0,0,0)
+    if (today > expDate) {
+      errEl.textContent = 'This access key has expired. Please contact CallWell to renew.'
+      return
+    }
+  }
+
+  // Valid — unlock
+  currentKey = raw
+  currentFacility = facility
+  NS = `cw_${raw}_`
+  localStorage.setItem('cw_last_key', raw)
+
+  document.getElementById('gate').style.display = 'none'
+  document.getElementById('app').style.display = 'block'
+
+  // Show pilot banner if expiry set
+  if (facility.expiry) {
+    const daysLeft = Math.ceil((new Date(facility.expiry) - new Date()) / (1000*60*60*24))
+    document.getElementById('days-remaining').textContent = daysLeft
+    document.getElementById('pilot-banner').classList.remove('hidden')
+    document.getElementById('main-content').style.marginTop = '0'
+  }
+
+  // Set facility name everywhere
+  document.getElementById('sidebar-facility-name').textContent = facility.name
+  document.getElementById('facility-display').textContent = facility.name
+
+  // Show key in settings
+  document.getElementById('settings-key-display').textContent = raw
+  document.getElementById('settings-key-expiry').textContent = facility.expiry
+    ? `Pilot access — expires ${new Date(facility.expiry).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`
+    : 'Full access — no expiration'
+
+  loadState()
+  renderAll()
+  startPolling()
+  navigate('dashboard')
+}
+
+function signOut() {
+  if (!confirm('Sign out of CallWell?')) return
+  currentKey = null
+  currentFacility = null
+  NS = ''
+  document.getElementById('app').style.display = 'none'
+  document.getElementById('gate').style.display = 'flex'
+  document.getElementById('gate-input').value = ''
+  document.getElementById('gate-error').textContent = ''
+  document.getElementById('gate-input').style.borderColor = ''
+  document.getElementById('pilot-banner').classList.add('hidden')
+  if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null }
+}
+
+// ══════════════════════════════════════════════════════
+// STATE — namespaced per facility key
+// ══════════════════════════════════════════════════════
+
+let state = {
+  residents: [], callLogs: [], schedule: [], alerts: [],
+  settings: {
+    facilityName: '', email: '', voice: 'June',
+    duration: 20, highKeywords: 'go home, where am i, scared, falling, chest pain, want to die',
+    medKeywords: 'confused, forgot, medication, lonely, not eating, not sleeping, pain',
+    shortCallThreshold: 3,
+  },
+  seenCallIds: new Set(),
+  pollTimer: null,
+}
+
+const COLORS = [
+  {bg:'#e8f4ee',text:'#1b4332'},{bg:'#dbeafe',text:'#1e40af'},
+  {bg:'#fef3c7',text:'#92400e'},{bg:'#fee2e2',text:'#991b1b'},
+  {bg:'#f0ede8',text:'#5f5e5a'},{bg:'#ede9fe',text:'#4c1d95'},
+]
+
+function nsKey(k) { return NS + k }
+
+function saveState() {
+  if (!NS) return
+  const data = {
+    residents: state.residents, callLogs: state.callLogs,
+    schedule: state.schedule, alerts: state.alerts,
+    settings: state.settings, seenCallIds: [...state.seenCallIds],
+  }
+  localStorage.setItem(nsKey('data'), JSON.stringify(data))
+}
+
+function loadState() {
+  if (!NS) return
+  try {
+    const raw = localStorage.getItem(nsKey('data'))
+    if (!raw) { state.settings.facilityName = currentFacility?.name || ''; return }
+    const d = JSON.parse(raw)
+    state.residents = d.residents || []
+    state.callLogs = d.callLogs || []
+    state.schedule = d.schedule || []
+    state.alerts = d.alerts || []
+    state.settings = { ...state.settings, ...(d.settings || {}) }
+    state.seenCallIds = new Set(d.seenCallIds || [])
+    if (!state.settings.facilityName) state.settings.facilityName = currentFacility?.name || ''
+  } catch(e) { console.error('Load error', e) }
+}
+
+// ══════════════════════════════════════════════════════
+// MOOD DETECTION
+// ══════════════════════════════════════════════════════
+
+function detectMood(transcript, durationSeconds) {
+  if (!transcript) return { mood: 'neutral', flags: [], score: 5 }
+  const text = transcript.toLowerCase()
+  const flags = []
+  let score = 5
+  const highKws = state.settings.highKeywords.split(',').map(k=>k.trim()).filter(Boolean)
+  const medKws = state.settings.medKeywords.split(',').map(k=>k.trim()).filter(Boolean)
+  const threshold = (state.settings.shortCallThreshold || 3) * 60
+  if (durationSeconds && durationSeconds < threshold) {
+    flags.push({ severity: 'high', message: `Call ended very early (${Math.round(durationSeconds/60)} min)` })
+    score -= 2
+  }
+  highKws.forEach(kw => { if(text.includes(kw)){ flags.push({severity:'high',message:`Detected: "${kw}"`}); score-=3 }})
+  medKws.forEach(kw => { if(text.includes(kw)){ flags.push({severity:'medium',message:`Noted: "${kw}"`}); score-=1 }})
+  ;['wonderful','happy','excited','family','thank you','great','slept well'].forEach(kw=>{ if(text.includes(kw)) score+=0.5 })
+  score = Math.max(1, Math.min(10, Math.round(score)))
+  const hasHigh = flags.some(f=>f.severity==='high')
+  const hasMed = flags.some(f=>f.severity==='medium')
+  let mood = 'positive'
+  if (hasHigh || score<=3) mood='alert'
+  else if (hasMed || score<=5) mood='concern'
+  else if (score<=7) mood='neutral'
+  return { mood, flags: flags.filter((f,i,a)=>a.findIndex(x=>x.message===f.message)===i), score }
+}
+
+// ══════════════════════════════════════════════════════
+// BUILD PROMPT — personalized, no Bland branding
+// ══════════════════════════════════════════════════════
+
+function buildPrompt(r) {
+  const h = new Date().getHours()
+  const tod = h<12?'morning':h<17?'afternoon':'evening'
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})
+  const facility = state.settings.facilityName || currentFacility?.name || 'the care facility'
+  return `You are a warm AI companion calling ${r.first} ${r.last}, a resident in Room ${r.room} at ${facility}.
+
+TODAY: ${today}. Time of day: ${tod}.
+
+RESIDENT PROFILE:
+- Name: ${r.first} ${r.last}, Room ${r.room}
+- Call frequency: ${r.freq||'Daily'}
+${r.interests?`- Interests: ${r.interests}`:''}
+${r.family?`- Family: ${r.family}`:''}
+${r.notes?`- Care notes: ${r.notes}`:''}
+${r.lastCallSummary?`- Last call summary: ${r.lastCallSummary}`:''}
+
+PERSONALITY: Warm, gentle, unhurried trusted friend. Short sentences. Always use first name: ${r.first}. Patient — if they repeat, respond kindly each time.
+
+OPENING: "Good ${tod}, ${r.first}! This is your companion calling from ${facility}. How are you doing today?"
+
+GOALS:
+1. Greet ${r.first} warmly — make them feel remembered and cared for
+2. Ask how they are feeling today — physically and emotionally
+3. Reference something personal from their profile
+4. Ask about their day — breakfast, sleep, plans
+5. Gently ask about medications
+6. Ask if they need anything or want to speak with staff
+7. Close warmly — the whole team cares about them
+
+FLAG IN SUMMARY if ${r.first}: is confused about location/date, asks to go home, mentions pain or falling, seems scared/lonely/sad, cannot recall recent events, ends call abruptly, mentions not eating/sleeping.
+
+POST-CALL SUMMARY: mood (positive/neutral/concern/alert), energy, topics discussed, flags with quotes, recommended follow-up.`.trim()
+}
+
+// ══════════════════════════════════════════════════════
+// BLAND API — hidden, operator key only
+// ══════════════════════════════════════════════════════
+
+async function blandCallNow(r) {
+  const h = new Date().getHours()
+  const tod = h<12?'morning':h<17?'afternoon':'evening'
+  const facility = state.settings.facilityName || currentFacility?.name || 'the care facility'
+  const resp = await fetch(`${OPERATOR_CONFIG.blandBase}/calls`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', authorization: OPERATOR_CONFIG.blandKey },
+    body: JSON.stringify({
+      phone_number: r.phone,
+      task: buildPrompt(r),
+      voice: state.settings.voice || 'June',
+      first_sentence: `Good ${tod}, ${r.first}! This is your companion calling from ${facility}. How are you doing today?`,
+      wait_for_greeting: true, record: true,
+      max_duration: state.settings.duration || 20,
+      temperature: 0.6,
+      metadata: { resident_id: r.id, resident_name: `${r.first} ${r.last}`, room: r.room, facility_key: currentKey, call_type: 'immediate' },
+    }),
+  })
+  return resp.json()
+}
+
+async function blandScheduleCall(r, scheduledTime, callType, customPrompt) {
+  const h = new Date().getHours()
+  const tod = h<12?'morning':h<17?'afternoon':'evening'
+  const facility = state.settings.facilityName || currentFacility?.name || 'the care facility'
+  const resp = await fetch(`${OPERATOR_CONFIG.blandBase}/calls`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', authorization: OPERATOR_CONFIG.blandKey },
+    body: JSON.stringify({
+      phone_number: r.phone,
+      task: customPrompt || buildPrompt(r),
+      voice: state.settings.voice || 'June',
+      first_sentence: `Good ${tod}, ${r.first}! This is your companion calling from ${facility}. How are you doing today?`,
+      wait_for_greeting: true, record: true,
+      max_duration: state.settings.duration || 20,
+      temperature: 0.6,
+      scheduled_time: scheduledTime,
+      metadata: { resident_id: r.id, resident_name: `${r.first} ${r.last}`, room: r.room, facility_key: currentKey, call_type: callType },
+    }),
+  })
+  return resp.json()
+}
+
+async function blandGetAllCalls() {
+  const resp = await fetch(`${OPERATOR_CONFIG.blandBase}/calls?limit=100`, {
+    headers: { authorization: OPERATOR_CONFIG.blandKey },
+  })
+  return resp.json()
+}
+
+// ══════════════════════════════════════════════════════
+// LIVE POLLING
+// ══════════════════════════════════════════════════════
+
+async function pollNow() {
+  if (!currentKey) return
+  setPollStatus('syncing')
+  try {
+    const data = await blandGetAllCalls()
+    const calls = data.calls || data || []
+    const sinceMs = Date.now() - 4 * 60 * 60 * 1000 // last 4 hours
+    let newCount = 0
+
+    calls.forEach(c => {
+      if (c.status !== 'completed') return
+      if (state.seenCallIds.has(c.call_id)) return
+      // Only process calls that belong to THIS facility
+      const meta = c.metadata || {}
+      if (meta.facility_key && meta.facility_key !== currentKey) return
+
+      const endedAt = new Date(c.end_at || c.created_at).getTime()
+      if (endedAt < sinceMs) { state.seenCallIds.add(c.call_id); return }
+
+      state.seenCallIds.add(c.call_id)
+      const transcript = c.concatenated_transcript || c.transcript || ''
+      const duration = c.call_length || 0
+      const { mood, flags, score } = detectMood(transcript, duration * 60)
+      const time = new Date(c.end_at || c.created_at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
+
+      const log = {
+        id: c.call_id,
+        resident: meta.resident_name || 'Unknown',
+        room: meta.room || '—',
+        direction: 'Outbound',
+        duration: `${Math.round(duration)} min`,
+        mood, score, time, transcript,
+        snippet: transcript ? transcript.slice(0,120)+'...' : 'No transcript available',
+        flags, callType: meta.call_type || 'Check-in',
+        residentId: meta.resident_id,
+        recordingUrl: c.recording_url || '',
+      }
+
+      if (!state.callLogs.find(l => l.id === log.id)) { state.callLogs.unshift(log); newCount++ }
+
+      if (meta.resident_id) {
+        state.residents = state.residents.map(r =>
+          r.id === meta.resident_id ? { ...r, mood, lastCall: `Today ${time}`, calls: (r.calls||0)+1, lastCallSummary: log.snippet } : r
+        )
+      }
+
+      flags.forEach(flag => {
+        const alertId = `${c.call_id}-${flag.message.slice(0,20)}`
+        if (!state.alerts.find(a=>a.id===alertId)) {
+          state.alerts.unshift({
+            id: alertId, resident: meta.resident_name||'Unknown',
+            room: meta.room||'—', severity: flag.severity,
+            time, desc: flag.message, callId: c.call_id, transcript: [],
+          })
+        }
+      })
+    })
+
+    if (newCount > 0) { showToast(`${newCount} new call${newCount>1?'s':''} completed`, 'success') }
+    saveState(); renderAll()
+    document.getElementById('last-polled').textContent = `Updated ${new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}`
+    setPollStatus('live')
+  } catch(e) {
+    console.error('Poll error:', e)
+    setPollStatus('error')
+  }
+}
+
+function setPollStatus(s) {
+  const el = document.getElementById('poll-status')
+  if (s === 'syncing') { el.innerHTML = '<div class="pulse" style="background:var(--info)"></div>Syncing...'; el.style.background='var(--info-light)'; el.style.color='var(--info)' }
+  else if (s === 'error') { el.innerHTML = '⚠ Sync error'; el.style.background='var(--danger-light)'; el.style.color='var(--danger)' }
+  else { el.innerHTML = '<div class="pulse"></div>Live'; el.style.background='var(--accent-light)'; el.style.color='var(--accent2)' }
+}
+
+function startPolling() {
+  if (state.pollTimer) clearInterval(state.pollTimer)
+  pollNow()
+  state.pollTimer = setInterval(pollNow, OPERATOR_CONFIG.pollInterval * 1000)
+}
+
+// ══════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.getElementById('page-'+page).classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+page+"'")) n.classList.add('active')
+  })
+  if(page==='residents') renderResidents()
+  if(page==='calls') renderCallLog()
+  if(page==='schedule') renderSchedule()
+  if(page==='alerts') renderAlerts()
+  if(page==='settings') loadSettingsForm()
+  if(page==='dashboard') renderDashboard()
+}
+
+// ══════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════
+
+function openModal(id) {
+  if(id==='modal-schedule') populateScheduleModal()
+  document.getElementById(id).style.display='flex'
+}
+function closeModal(id) { document.getElementById(id).style.display='none' }
+function closeModalOutside(e,id) { if(e.target.id===id) closeModal(id) }
+
+// ══════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════
+
+function showToast(msg, type='') {
+  const t = document.createElement('div')
+  t.className = `toast toast-${type}`; t.textContent = msg
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 3500)
+}
+
+// ══════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════
+
+function moodBadge(mood) {
+  const map={positive:['mood-positive','Positive'],neutral:['mood-neutral','Neutral'],concern:['mood-concern','Concern'],alert:['mood-alert','Flagged']}
+  const [cls,label]=map[mood]||['mood-neutral','Unknown']
+  return `<span class="mood-badge ${cls}">${label}</span>`
+}
+
+// ══════════════════════════════════════════════════════
+// RESIDENTS
+// ══════════════════════════════════════════════════════
+
+function addResident() {
+  const first=document.getElementById('res-first').value.trim()
+  const last=document.getElementById('res-last').value.trim()
+  const room=document.getElementById('res-room').value.trim()
+  if(!first||!last||!room){showToast('Name and room are required','error');return}
+  const c=COLORS[state.residents.length%COLORS.length]
+  state.residents.push({
+    id:Date.now().toString(), first, last, room,
+    phone:document.getElementById('res-phone').value.trim(),
+    interests:document.getElementById('res-interests').value.trim(),
+    family:document.getElementById('res-family').value.trim(),
+    notes:document.getElementById('res-notes').value.trim(),
+    freq:document.getElementById('res-freq').value,
+    mood:'neutral', calls:0, lastCall:'Never', color:c.bg, colorText:c.text,
+  })
+  saveState(); renderAll(); closeModal('modal-add-resident')
+  ;['res-first','res-last','res-room','res-phone','res-interests','res-family','res-notes'].forEach(id=>document.getElementById(id).value='')
+  showToast(`${first} ${last} added`)
+}
+
+function openEditResident(id) {
+  const r=state.residents.find(r=>r.id===id); if(!r)return
+  document.getElementById('edit-res-id').value=r.id
+  document.getElementById('edit-res-first').value=r.first
+  document.getElementById('edit-res-last').value=r.last
+  document.getElementById('edit-res-room').value=r.room
+  document.getElementById('edit-res-phone').value=r.phone||''
+  document.getElementById('edit-res-interests').value=r.interests||''
+  document.getElementById('edit-res-family').value=r.family||''
+  document.getElementById('edit-res-notes').value=r.notes||''
+  document.getElementById('edit-res-freq').value=r.freq||'Daily'
+  openModal('modal-edit-resident')
+}
+
+function saveResident() {
+  const id=document.getElementById('edit-res-id').value
+  state.residents=state.residents.map(r=>r.id!==id?r:{...r,
+    first:document.getElementById('edit-res-first').value.trim(),
+    last:document.getElementById('edit-res-last').value.trim(),
+    room:document.getElementById('edit-res-room').value.trim(),
+    phone:document.getElementById('edit-res-phone').value.trim(),
+    interests:document.getElementById('edit-res-interests').value.trim(),
+    family:document.getElementById('edit-res-family').value.trim(),
+    notes:document.getElementById('edit-res-notes').value.trim(),
+    freq:document.getElementById('edit-res-freq').value,
+  })
+  saveState();renderAll();closeModal('modal-edit-resident');showToast('Resident updated')
+}
+
+function deleteResident() {
+  const id=document.getElementById('edit-res-id').value
+  const r=state.residents.find(r=>r.id===id)
+  if(!confirm(`Delete ${r?.first} ${r?.last}?`))return
+  state.residents=state.residents.filter(r=>r.id!==id)
+  saveState();renderAll();closeModal('modal-edit-resident');showToast('Resident removed')
+}
+
+async function callResidentNow(id) {
+  const r=state.residents.find(r=>r.id===id); if(!r)return
+  if(!r.phone){showToast('No phone number — edit resident to add one','error');return}
+  if(!confirm(`Call ${r.first} ${r.last} now?\n${r.phone}`))return
+  showToast(`Calling ${r.first}...`)
+  try {
+    const data=await blandCallNow(r)
+    if(data.call_id) showToast(`Call started!`,'success')
+    else showToast('Error: '+(data.message||'Unknown'),'error')
+  } catch(e){showToast('Error: '+e.message,'error')}
+}
+
+function renderResidents(search='') {
+  const grid=document.getElementById('resident-grid')
+  const filtered=state.residents.filter(r=>`${r.first} ${r.last} ${r.room}`.toLowerCase().includes(search.toLowerCase()))
+  document.getElementById('resident-page-sub').textContent=`${state.residents.length} enrolled`
+  if(filtered.length===0){
+    grid.innerHTML='<div style="grid-column:1/-1"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No residents found</div><div>Add a resident to get started</div></div></div>'
+    return
+  }
+  grid.innerHTML=filtered.map(r=>`
+    <div class="resident-card">
+      <div class="resident-avatar" style="background:${r.color};color:${r.colorText}">${r.first[0]}${r.last[0]}</div>
+      <div class="resident-name">${r.first} ${r.last}</div>
+      <div class="resident-room">Room ${r.room} · ${r.freq}</div>
+      ${r.notes?`<div style="font-size:12px;color:var(--text3);margin-bottom:4px">${r.notes.slice(0,80)}${r.notes.length>80?'...':''}</div>`:''}
+      ${r.phone?`<div style="font-size:11px;color:var(--accent2);font-family:var(--mono);margin-bottom:4px">${r.phone}</div>`:`<div style="font-size:11px;color:var(--warn);margin-bottom:4px">⚠ No phone — edit to add</div>`}
+      ${r.lastCall!=='Never'?`<div style="font-size:11px;color:var(--text3)">Last: ${r.lastCall}</div>`:''}
+      <div class="resident-meta">${moodBadge(r.mood)}<span style="font-size:11px;color:var(--text3)">${r.calls||0} calls</span></div>
+      <div style="margin-top:10px;display:flex;gap:6px">
+        <button class="btn btn-sm btn-primary" onclick="callResidentNow('${r.id}')">Call Now</button>
+        <button class="btn btn-sm" onclick="openEditResident('${r.id}')">Edit</button>
+      </div>
+    </div>
+  `).join('')
+}
+
+// ══════════════════════════════════════════════════════
+// CALL LOG
+// ══════════════════════════════════════════════════════
+
+function renderCallLog() {
+  const tbody=document.getElementById('call-log-table')
+  if(state.callLogs.length===0){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">No calls yet</td></tr>';return}
+  tbody.innerHTML=state.callLogs.map(c=>`
+    <tr>
+      <td><strong>${c.resident}</strong><br><span style="font-size:11px;color:var(--text3)">Room ${c.room}</span></td>
+      <td><span class="tag" style="background:${c.direction==='Outbound'?'var(--accent-light)':'var(--info-light)'};color:${c.direction==='Outbound'?'var(--accent2)':'var(--info)'}">${c.direction}</span></td>
+      <td>${c.duration}</td>
+      <td>${moodBadge(c.mood)}</td>
+      <td style="font-family:var(--mono);font-size:12px">${c.time}</td>
+      <td style="max-width:200px;color:var(--text3);font-style:italic;font-size:12px">"${(c.snippet||'').slice(0,60)}..."</td>
+      <td><button class="btn btn-sm" onclick="viewTranscript('${c.id}')">Transcript</button></td>
+    </tr>
+  `).join('')
+}
+
+function viewTranscript(callId) {
+  const c=state.callLogs.find(l=>l.id===callId); if(!c)return
+  document.getElementById('transcript-title').textContent=`${c.resident} — ${c.time}`
+  document.getElementById('transcript-meta').textContent=`Room ${c.room} · ${c.duration} · ${c.callType||'Check-in'} · Mood: ${c.mood}`
+  const content=document.getElementById('transcript-content')
+  content.innerHTML=c.transcript
+    ?c.transcript.split('\n').filter(Boolean).map(line=>`<div class="transcript-line">${line}</div>`).join('')
+    :'<div style="color:var(--text3)">No transcript available</div>'
+  const flagsEl=document.getElementById('transcript-flags')
+  if(c.flags&&c.flags.length>0){
+    flagsEl.innerHTML=`<div style="font-weight:600;font-size:12px;margin-bottom:8px">Flags detected:</div>`+
+      c.flags.map(f=>`<div style="padding:6px 10px;margin-bottom:6px;border-radius:var(--radius-sm);background:${f.severity==='high'?'var(--danger-light)':'var(--warn-light)'};color:${f.severity==='high'?'var(--danger)':'var(--warn)'};font-size:12px">${f.severity.toUpperCase()}: ${f.message}</div>`).join('')
+  } else { flagsEl.innerHTML='' }
+  openModal('modal-transcript')
+}
+
+// ══════════════════════════════════════════════════════
+// SCHEDULE
+// ══════════════════════════════════════════════════════
+
+function populateScheduleModal() {
+  const sel=document.getElementById('sched-resident')
+  sel.innerHTML=state.residents.length
+    ?state.residents.map(r=>`<option value="${r.id}">${r.first} ${r.last} — Room ${r.room}${!r.phone?' ⚠ no phone':''}</option>`).join('')
+    :'<option>No residents added yet</option>'
+  document.getElementById('sched-date').value=new Date().toISOString().split('T')[0]
+  const s=document.getElementById('sched-status'); s.style.display='none'; s.textContent=''
+}
+
+async function scheduleCall() {
+  const resId=document.getElementById('sched-resident').value
+  const r=state.residents.find(r=>r.id===resId)
+  if(!r){showToast('Select a resident','error');return}
+  if(!r.phone){showToast('Resident has no phone number','error');return}
+  const date=document.getElementById('sched-date').value
+  const time=document.getElementById('sched-time').value
+  const callType=document.getElementById('sched-type').value
+  const recur=document.getElementById('sched-recur').value
+  const customPrompt=document.getElementById('sched-prompt').value
+  if(!date||!time){showToast('Select date and time','error');return}
+  const btn=document.getElementById('sched-btn')
+  const statusEl=document.getElementById('sched-status')
+  btn.disabled=true; statusEl.style.display='block'
+  statusEl.style.background='var(--surface2)'; statusEl.style.color='var(--text3)'
+  statusEl.textContent='Scheduling call...'
+  try {
+    const data=await blandScheduleCall(r, new Date(`${date}T${time}`).toISOString(), callType, customPrompt)
+    if(data.call_id){
+      state.schedule.push({
+        id:Date.now().toString(), callId:data.call_id,
+        residentId:r.id, name:`${r.first} ${r.last}`, room:r.room,
+        time:new Date(`${date}T${time}`).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
+        date, type:callType, recur, done:false,
+      })
+      saveState(); renderSchedule()
+      statusEl.style.background='var(--accent-light)'; statusEl.style.color='var(--accent2)'
+      statusEl.textContent='Call scheduled!'
+      showToast(`Call scheduled for ${r.first}`,'success')
+      setTimeout(()=>closeModal('modal-schedule'),2000)
+    } else {
+      statusEl.style.background='var(--danger-light)'; statusEl.style.color='var(--danger)'
+      statusEl.textContent='Error: '+(data.message||JSON.stringify(data))
+    }
+  } catch(e){
+    statusEl.style.background='var(--danger-light)'; statusEl.style.color='var(--danger)'
+    statusEl.textContent='Error: '+e.message
+  } finally{btn.disabled=false}
+}
+
+function renderSchedule() {
+  const today=new Date().toISOString().split('T')[0]
+  const todayItems=state.schedule.filter(s=>s.date===today)
+  document.getElementById('schedule-day-title').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})
+  document.getElementById('schedule-count').textContent=`${todayItems.length} today`
+  const list=document.getElementById('schedule-list')
+  if(state.schedule.length===0){list.innerHTML='<div class="empty-state" style="padding:40px"><div class="empty-icon">📅</div><div class="empty-title">No calls scheduled</div></div>';return}
+  list.innerHTML=state.schedule.map(s=>`
+    <div class="schedule-row" style="${s.done?'opacity:0.5':''}">
+      <div class="schedule-time">${s.time}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${s.name}${s.done?' <span style="font-size:11px;color:var(--accent)">✓ Done</span>':''}</div>
+        <div style="font-size:11px;color:var(--text3)">Room ${s.room} · ${s.type} · ${s.recur}</div>
+      </div>
+      ${!s.done?`<button class="btn btn-sm btn-primary" onclick="callResidentNow('${s.residentId}')">Call Now</button>`:''}
+      <button class="btn btn-sm" onclick="removeSchedule('${s.id}')">Remove</button>
+    </div>
+  `).join('')
+}
+
+function removeSchedule(id) {
+  state.schedule=state.schedule.filter(s=>s.id!==id)
+  saveState();renderSchedule()
+}
+
+// ══════════════════════════════════════════════════════
+// ALERTS
+// ══════════════════════════════════════════════════════
+
+function renderAlerts() {
+  const container=document.getElementById('alerts-list')
+  if(state.alerts.length===0){container.innerHTML='<div class="empty-state" style="padding:48px"><div style="font-size:40px;margin-bottom:12px">✓</div><div class="empty-title">All clear — no alerts</div></div>';return}
+  container.innerHTML=state.alerts.map(a=>`
+    <div class="alert-item">
+      <div class="alert-icon ${a.severity==='high'?'alert-high':'alert-med'}" style="font-size:16px">${a.severity==='high'?'⚠':'!'}</div>
+      <div class="alert-content" style="flex:1">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+          <div class="alert-title" style="font-size:14px">${a.resident} — Room ${a.room}</div>
+          <span class="alert-badge ${a.severity==='high'?'badge-high':'badge-med'}">${a.severity==='high'?'High':'Medium'}</span>
+        </div>
+        <div class="alert-desc" style="font-size:13px;margin-bottom:8px">${a.desc}</div>
+        <div style="display:flex;gap:8px">
+          ${a.callId?`<button class="btn btn-sm" onclick="viewTranscript('${a.callId}')">View Transcript</button>`:''}
+          <button class="btn btn-sm btn-danger" onclick="dismissAlert('${a.id}')">Dismiss</button>
+        </div>
+      </div>
+      <div class="alert-time-label">${a.time}</div>
+    </div>
+  `).join('')
+}
+
+function dismissAlert(id){state.alerts=state.alerts.filter(a=>a.id!==id);saveState();renderAll()}
+function dismissAllAlerts(){if(!confirm('Dismiss all alerts?'))return;state.alerts=[];saveState();renderAll();showToast('All alerts dismissed')}
+
+// ══════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════
+
+function loadSettingsForm() {
+  document.getElementById('settings-facility').value=state.settings.facilityName||currentFacility?.name||''
+  document.getElementById('settings-email').value=state.settings.email||''
+  document.getElementById('settings-voice').value=state.settings.voice||'June'
+  document.getElementById('settings-duration').value=state.settings.duration||20
+  document.getElementById('settings-high-kw').value=state.settings.highKeywords||''
+  document.getElementById('settings-med-kw').value=state.settings.medKeywords||''
+  document.getElementById('settings-short-call').value=state.settings.shortCallThreshold||3
+}
+
+function saveSettings() {
+  state.settings.facilityName=document.getElementById('settings-facility').value.trim()
+  state.settings.email=document.getElementById('settings-email').value.trim()
+  state.settings.voice=document.getElementById('settings-voice').value
+  state.settings.duration=parseInt(document.getElementById('settings-duration').value)
+  state.settings.highKeywords=document.getElementById('settings-high-kw').value
+  state.settings.medKeywords=document.getElementById('settings-med-kw').value
+  state.settings.shortCallThreshold=parseInt(document.getElementById('settings-short-call').value)
+  saveState()
+  document.getElementById('facility-display').textContent=state.settings.facilityName
+  document.getElementById('sidebar-facility-name').textContent=state.settings.facilityName
+  showToast('Settings saved','success')
+}
+
+// ══════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════
+
+function renderDashboard() {
+  document.getElementById('dashboard-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+' — Live'
+  document.getElementById('stat-residents').textContent=state.residents.length
+  document.getElementById('stat-calls').textContent=state.callLogs.length
+  document.getElementById('stat-positive').textContent=state.residents.filter(r=>r.mood==='positive').length
+  document.getElementById('stat-alerts').textContent=state.alerts.length
+  document.getElementById('resident-count-display').textContent=`${state.residents.length} residents`
+
+  const alertBadge=document.getElementById('alert-badge')
+  const dashAlertBadge=document.getElementById('dashboard-alert-badge')
+  if(state.alerts.length>0){alertBadge.textContent=state.alerts.length;alertBadge.style.display='inline';dashAlertBadge.textContent=`${state.alerts.length} active`;dashAlertBadge.style.display='inline'}
+  else{alertBadge.style.display='none';dashAlertBadge.style.display='none'}
+
+  const callsEl=document.getElementById('dashboard-calls')
+  if(state.callLogs.length===0){callsEl.innerHTML='<div class="empty-state"><div class="empty-icon">📞</div><div class="empty-title">No calls yet</div></div>'}
+  else{callsEl.innerHTML=state.callLogs.slice(0,5).map(c=>`
+    <div class="call-log-item">
+      <div class="call-icon call-icon-out">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d6a4f" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg>
+      </div>
+      <div class="call-info">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="call-name">${c.resident} ${moodBadge(c.mood)}</div>
+          <span style="font-size:11px;color:var(--text3)">${c.time}</span>
+        </div>
+        <div class="call-time-label">Room ${c.room} · ${c.duration}</div>
+        <div class="call-snippet">"${(c.snippet||'').slice(0,100)}"</div>
+      </div>
+    </div>
+  `).join('')}
+
+  const today=new Date().toISOString().split('T')[0]
+  const upcoming=state.schedule.filter(s=>!s.done&&s.date>=today).slice(0,4)
+  const upcomingEl=document.getElementById('dashboard-upcoming')
+  if(upcoming.length===0){upcomingEl.innerHTML='<div class="empty-state" style="padding:24px"><div class="empty-title">No upcoming calls</div></div>'}
+  else{upcomingEl.innerHTML=upcoming.map(s=>`
+    <div class="schedule-row">
+      <div class="schedule-time">${s.time}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${s.name}</div><div style="font-size:11px;color:var(--text3)">Room ${s.room} · ${s.type}</div></div>
+      <span class="tag" style="background:var(--accent-light);color:var(--accent2)">Outbound</span>
+    </div>
+  `).join('')}
+
+  const alertsEl=document.getElementById('dashboard-alerts')
+  if(state.alerts.length===0){alertsEl.innerHTML='<div class="empty-state" style="padding:32px 20px"><div style="font-size:24px;margin-bottom:8px">✓</div><div class="empty-title">No alerts</div></div>'}
+  else{alertsEl.innerHTML=state.alerts.slice(0,3).map(a=>`
+    <div class="alert-item" onclick="navigate('alerts')" style="cursor:pointer">
+      <div class="alert-icon ${a.severity==='high'?'alert-high':'alert-med'}">${a.severity==='high'?'⚠':'!'}</div>
+      <div class="alert-content">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px">
+          <div class="alert-title">${a.resident}</div>
+          <span class="alert-badge ${a.severity==='high'?'badge-high':'badge-med'}">${a.severity==='high'?'High':'Med'}</span>
+        </div>
+        <div class="alert-desc">${a.desc.slice(0,80)}...</div>
+        <div class="alert-time-label">${a.time}</div>
+      </div>
+    </div>
+  `).join('')}
+
+  const total=state.residents.length||1
+  const moods=[
+    ['Positive',state.residents.filter(r=>r.mood==='positive').length,'var(--accent)'],
+    ['Neutral',state.residents.filter(r=>r.mood==='neutral').length,'var(--text3)'],
+    ['Concern',state.residents.filter(r=>r.mood==='concern').length,'var(--warn)'],
+    ['Flagged',state.residents.filter(r=>r.mood==='alert').length,'var(--danger)'],
+  ]
+  document.getElementById('mood-overview').innerHTML=moods.map(([label,count,color])=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="font-size:12px;color:var(--text3);width:60px">${label}</div>
+      <div style="flex:1;background:var(--surface2);border-radius:4px;height:8px;overflow:hidden">
+        <div style="width:${(count/total)*100}%;height:100%;background:${color};border-radius:4px;transition:width 0.5s"></div>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:${color};width:20px;text-align:right">${count}</div>
+    </div>
+  `).join('')
+}
+
+function renderAll() {
+  renderDashboard(); renderResidents(); renderCallLog(); renderSchedule(); renderAlerts()
+}
+
+// ══════════════════════════════════════════════════════
+// INIT — auto-login if key remembered
+// ══════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', () => {
+  const lastKey = localStorage.getItem('cw_last_key')
+  if (lastKey && OPERATOR_CONFIG.keys[lastKey]) {
+    document.getElementById('gate-input').value = lastKey
+    validateKey()
+  }
+})
+</script>
+</body>
+</html>
